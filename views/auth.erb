@@ -1,0 +1,10 @@
+<h1>Auth</h1>
+<form action="login" method="post">
+  <input type="hidden" name="state" value="<%= state %>">
+  <input type="hidden" name="redirect_uri" value="<%= redirect_uri %>">
+  <div class="mb-3">
+    <label class="form-label">sub</label>
+    <input class="form-control" name="sub" />
+  </div>
+  <button type="submit" class="btn btn-primary">Submit</button>
+</form> 
