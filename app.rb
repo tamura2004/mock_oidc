@@ -3,12 +3,15 @@ require "sinatra/reloader" if development?
 require "sinatra/json"
 require "securerandom"
 require "jwt"
+require "net/http"
+
+BASE_URL = ENV["BASE_URL"] || "http://localhost:4567"
 
 set :bind, "0.0.0.0"
 
 get "/" do
   state = SecureRandom.uuid
-  redirect_uri = "/auth"
+  redirect_uri = "/callback"
   erb :home, locals: {state: state, redirect_uri: redirect_uri}
 end
 
@@ -26,11 +29,16 @@ post "/login" do
 end
 
 get "/callback" do
+  # /tokenからjsonを取得する
+  uri = URI.parse(BASE_URL + "/token")
+  res = Net::HTTP.post_form(uri, { code: params[:code] })
+  json = JSON.parse(res.body)
+  id_token = json["id_token"]
+  erb :callback, locals: { id_token: id_token }
 end
 
-post "/token", provides: :json do
-  params = JSON.parse(request.body.read)
-  code = params["code"]
+post "/token" do
+  code = params[:code]
   response = {
     access_token: code,
     token_type: "Bearer",
@@ -44,8 +52,8 @@ end
 def generate_id_token(code)
   payload = {
     sub: code,
-    iss: "http://localhost:4567",
-    aud: "http://localhost:4567",
+    iss: "https://example.com",
+    aud: "client_id",
     exp: Time.now.to_i + 360,
   }
   JWT.encode(payload, nil, "HS256")
