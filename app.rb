@@ -25,7 +25,8 @@ post "/login" do
   state = params[:state]
   uri = params[:redirect_uri]
   sub = params[:sub]
-  redirect "#{uri}?code=#{sub}&state=#{state}"
+  iss = "https://example.com"
+  redirect "#{uri}?code=#{sub}&state=#{state}&iss=#{iss}"
 end
 
 get "/callback" do
