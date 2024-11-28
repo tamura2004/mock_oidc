@@ -8,6 +8,7 @@ require "net/http"
 BASE_URL = ENV["BASE_URL"] || "http://localhost:4567"
 
 set :bind, "0.0.0.0"
+set :host_authorization, { permitted_hosts: [] }
 
 get "/" do
   state = SecureRandom.uuid
